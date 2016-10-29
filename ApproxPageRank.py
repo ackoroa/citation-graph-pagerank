@@ -1,31 +1,31 @@
-import math.log as log
-import random
+import math, random
+import ApproxRow
 
-def approxPageRank(nodeList, threshold):
+def approxPageRank(threshold, nodeList, rowApproximator):
     n = len(nodeList)
-    
+
     chunks = {}
-    h = log(n / (4.0 * threshold), 2)
-    for t in range(0,h+1):
+    h = math.log2(n / (4.0 * threshold))
+    for t in range(0, h+1):
         epst = 2**-t
-        S = 4 * n * epst * log(n,2)**2 / threshold
-        for s in range(0:S):
+        S = 4 * n * epst * math.log2(n)**2 / threshold
+        for s in range(0, S):
             v = nodeList[random.randrange(n)]
-            neighbourList = approxRow(v, epst/2.0, 0.5)
+            neighbourList = rowApproximator.approxRow(v, epst/2.0, 0.5)
             for neighbour, eps in neighbourList.iteritems():
-                if (neighbour, eps) in chunks:
-                    chunks[(neighbour, eps)] = chunks[(neighbour, eps)] + 1
-                else:
-                    chunks[(neighbour, eps)] = 1
+                if not (neighbour, eps) in chunks:
+                    chunks[(neighbour, eps)] = 0
+                chunks[(neighbour, eps)] += 1
     
     pageRankValues = {}
     for (node, eps), val in chunks:
-        if val >= log(n)/2.0:
+        if val >= math.log2(n)/2:
             if not node in pageRankValues:
                 pageRankValus[node] = 0
-            pageRankValus[node] = pageRankValus[node] + threshold / (2 * eps * log(n)**2)
+            pageRankValus[node] += threshold / (2 * eps * math.log2(n)**2)
+    
     significantNodes = []
-    for node, pagerank in pageRankValues:
+    for node, pagerank in pageRankValues.iteritems():
         if pagerank >= threshold/4.0:
             significantNodes.append((node, pagerank))
     return significantNodes
