@@ -1,5 +1,5 @@
 import math, random
-import ApproxRow
+import ApproxRow #do I need this import?
 
 def approxPageRank(threshold, nodeList, rowApproximator):
     n = len(nodeList)
@@ -18,7 +18,7 @@ def approxPageRank(threshold, nodeList, rowApproximator):
                 chunks[(neighbour, eps)] += 1
     
     pageRankValues = {}
-    for (node, eps), val in chunks:
+    for (node, eps), val in chunks.iteritems():
         if val >= math.log2(n)/2:
             if not node in pageRankValues:
                 pageRankValus[node] = 0
