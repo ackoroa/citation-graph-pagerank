@@ -1,16 +1,15 @@
 import math, random
-from ApproxRow import RowApproximator
 
 def approxPageRank(threshold, nodeList, rowApproximator):
     n = len(nodeList)
     print "n =", n
 
     chunks = {}
-    h = math.log2(n / (4.0 * threshold))
+    h = math.ceil(math.log(n / (4.0 * threshold),2))
     for t in range(0, h+1):
         print "t =", t, "/", h
         epst = 2**-t
-        S = 4 * n * epst * math.log2(n)**2 / threshold
+        S = math.ceil(4 * n * epst * math.log(n,2)**2 / threshold)
         for s in range(0, S):
             print "s =", s, "/", S
             v = nodeList[random.randrange(n)]
@@ -22,7 +21,7 @@ def approxPageRank(threshold, nodeList, rowApproximator):
     
     pageRankValues = {}
     for (node, eps), val in chunks.iteritems():
-        if val >= math.log2(n)/2:
+        if val >= math.log(n,2)/2:
             if not node in pageRankValues:
                 pageRankValus[node] = 0
             pageRankValus[node] += threshold / (2 * eps * math.log2(n)**2)
