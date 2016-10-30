@@ -8,10 +8,10 @@ if __name__ == "__main__":
     nodeList = pickle.load(open("node_list.p", "rb"))
     print "Load adjacency list..."
     adjList = pickle.load(open("adj_list.p", "rb"))
-    print "Load complete in", time.time() - loadStart, "ms"
+    print "Load complete in", time.time() - loadStart, "s"
 
     alpha = 0.01
-    threshold = len(nodeList)/2
+    threshold = len(nodeList)/8
     
     print "Init row approximator"
     rowApproximator = RowApproximator(adjList, nodeList, alpha)
@@ -19,5 +19,5 @@ if __name__ == "__main__":
     print "Start pagerank estimation"
     start = time.time()
     significantNodes = approxPageRank(threshold, nodeList, rowApproximator)
-    print "Pagerank estimated in", time.time() - start, "ms"
+    print "Pagerank estimated in", time.time() - start, "s"
     print significantNodes
