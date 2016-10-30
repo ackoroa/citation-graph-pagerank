@@ -29,3 +29,12 @@ def approxPageRank(threshold, nodeList, rowApproximator):
         if pagerank >= threshold/4.0:
             significantNodes.append((node, pagerank))
     return significantNodes
+
+if __name__=="__main__":
+    nodeList = pickle.load(open("node_list.p", "rb"))
+    adjList = pickle.load(open("adjacency_list.p", "rb"))
+    alpha = 0.01
+    threshold = len(nodeList)/2
+
+    rowApproximator = RowApproximator(adjList, nodeList, alpha)
+    significantNodes = approxPageRank(threshold, nodeList, rowApproximator)
