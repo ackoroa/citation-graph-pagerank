@@ -1,5 +1,5 @@
 import math, random
-import ApproxRow #do I need this import?
+from ApproxRow import RowApproximator
 
 def approxPageRank(threshold, nodeList, rowApproximator):
     n = len(nodeList)
