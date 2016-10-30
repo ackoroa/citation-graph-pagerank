@@ -2,13 +2,11 @@ import math, pickle, random, time
 
 class RowApproximator:	
 
-	def __init__(self, adjacency_list_file, node_list_file, alpha=0.2):
-		print "Loading adjacency list..."
+	def __init__(self, adjacency_list, node_list, alpha=0.2):
 		# start_time = time.time()
-		self.adj_list = pickle.load(open(adjacency_list_file, 'rb'))
-		print "Loading node list..."
-		self.node_list = pickle.load(open(node_list_file, 'rb'))
-		self.n = len(node_list_file)
+		self.adj_list = adjacency_list
+		self.node_list = node_list
+		self.n = len(node_list)
 		self.alpha = alpha
 		print "Row approximator initiated."
 		# print "Time cost:", time.time() - start_time
@@ -63,7 +61,10 @@ class RowApproximator:
 
 if __name__=="__main__":
 	#This is just a demo to show how to use the rowApprox
-	rowApproximator = RowApproximator('adjacency_list.p', 'node_list.p')
+	node_list = pickle.load(open("node_list.p", "rb"))
+	adj_list = pickle.load(open("adjacency_list.p", "rb"))
+
+	rowApproximator = RowApproximator(adj_list, node_list)
 	v = '53908b1820f70186a0db3fdc'
 	row_result = rowApproximator.approxRow(v, 0.2, 0.2)
 	print "Calculation finished."
