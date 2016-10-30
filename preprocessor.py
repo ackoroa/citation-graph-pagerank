@@ -46,11 +46,16 @@ def processArticle(temp_store):
 if __name__ == "__main__":
 	data_file_path = sys.argv[1]
 	preprocess(data_file_path)
-	print "Article Stored:", len(article_store)
-	print "Dumping article_store..."
+	#print "Article Stored:", len(article_store)
+	#print "Dumping article_store..."
 	#pickle.dump(article_store, open('article_store.p','w+'))
+	print "Dumping node_list..."
+	node_list_file = open('node_list.p','w+')
+	pickle.dump(adjacency_list.keys(), node_list_file)
+	node_list_file.close()
 	print "Done.\nDumping adjacency_list..."
-	#pickle.dump(adjacency_list, open('adjacency_list.p', 'w+'))
+	adj_list_file = open('adj_list.p','w+')
+	pickle.dump(adjacency_list, open('adjacency_list.p', 'w+'))
+	adj_list_file.close()
 	print "Done."
-	pickle.dump(adjacency_list.keys(), open('node_list.p','w+'))
-
+	
