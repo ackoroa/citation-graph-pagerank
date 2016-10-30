@@ -10,7 +10,7 @@ if __name__ == "__main__":
     adjList = pickle.load(open("adj_list.p", "rb"))
     print "Load complete in", time.time() - loadStart, "s"
 
-    alpha = 0.01
+    alpha = 0.1
     threshold = len(nodeList)/8
     
     print "Init row approximator"
