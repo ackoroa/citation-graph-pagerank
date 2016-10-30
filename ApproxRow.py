@@ -19,8 +19,10 @@ class RowApproximater:
 		return node_count_tree
 
 	def getAverageNodeCountTree(self, node_count_tree, r):
+		print "Get average of tree over", r, "rounds."
 		for key in node_count_tree:
-			node_count_tree[key] = node_count_tree[key] / r
+			node_count_tree[key] = 1.0 * node_count_tree[key] / r
+		return node_count_tree
 
 	def approxRow(self, v, eps, rho):
 		start_time = time.time()
@@ -34,32 +36,32 @@ class RowApproximater:
 		# print "Node_count_tree inited. length:", len(node_count_tree)
 
 		for i in range(0, r):
-			print "i =", i
-			self.walk(v, self.alpha, length, node_count_tree)
+			node_count_tree = self.walk(v, self.alpha, length, node_count_tree)
 		
-		self.getAverageNodeCountTree(node_count_tree, r)
+		node_count_tree = self.getAverageNodeCountTree(node_count_tree, r)
 		print "approxRow ok. Time cost:", time.time() - start_time
 		return node_count_tree
 
 	def walk(self, v, alpha, length, node_count_tree):
-		print "walk form v", v
+		# print "walk from v", v
 		count = 1
 		cur_node = v
-
+		next_node = v
 		while count <= length:
+			cur_node = next_node
 			count += 1
 			dice = random.random()
 			# print "cur node is", cur_node
 			# print "rolling dice...", dice
-			if dice < alpha:
+			if dice < alpha:    
 				# print "dice < alpha. Stop."
 				break
 			else:
 				neighbours = self.adj_list[cur_node]
 				if len(neighbours) < 1:
-					cur_node = random.choice(self.node_list)
+					next_node = random.choice(self.node_list)
 				else:
-					cur_node = random.choice(neighbours)
+					next_node = random.choice(neighbours)
 
 		# print "walk stopped, cur_node is:", cur_node
 		node_count_tree[cur_node] += 1
@@ -69,8 +71,17 @@ if __name__=="__main__":
 	rowApproximater = RowApproximater('adjacency_list.p', 'node_list.p')
 	v = '53908b1820f70186a0db3fdc'
 	row_result = rowApproximater.approxRow(v, 0.2, 0.2)
-	print "Calculation finished. Dumping..."
-	pickle.dump(row_result, open('result.p', 'w+'))
-	print "Done."
+	print "Calculation finished."
+	f = open('result.txt', 'w+')
+	result = ""
+	count = 0
+	#Just to get some sense of the result
+	for key in row_result:
+		if row_result[key] > 0:
+			count += 1
+			result +=  key + '\t ' + str(row_result[key]) + '\n'
+	f.write(result)
+	f.close()
+	print "Done. count:", count
 
 
