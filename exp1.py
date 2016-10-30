@@ -21,3 +21,6 @@ if __name__ == "__main__":
     significantNodes = approxPageRank(threshold, nodeList, rowApproximator)
     print "Pagerank estimated in", time.time() - start, "s"
     print significantNodes
+    print "Dumping significant nodes..."
+    pickle.dump(significantNodes, open('exp1.p','w+'))
+    print "Done."

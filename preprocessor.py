@@ -50,12 +50,8 @@ if __name__ == "__main__":
 	#print "Dumping article_store..."
 	#pickle.dump(article_store, open('article_store.p','w+'))
 	print "Dumping node_list..."
-	node_list_file = open('node_list.p','w+')
-	pickle.dump(adjacency_list.keys(), node_list_file)
-	node_list_file.close()
+	pickle.dump(adjacency_list.keys(), open('node_list.p','w+'))
 	print "Done.\nDumping adjacency_list..."
-	adj_list_file = open('adj_list.p','w+')
-	pickle.dump(adjacency_list, adj_list_file)
-	adj_list_file.close()
+	pickle.dump(adjacency_list, open('adj_list.p','w+'))
 	print "Done."
 	
