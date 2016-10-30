@@ -49,7 +49,7 @@ if __name__ == "__main__":
 	print "Article Stored:", len(article_store)
 	print "Dumping article_store..."
 	pickle.dump(article_store, open('article_store.p','w+'))
-	print "Dumping node_list..."
+	print "Done.\nDumping node_list..."
 	pickle.dump(adjacency_list.keys(), open('node_list.p','w+'))
 	print "Done.\nDumping adjacency_list..."
 	pickle.dump(adjacency_list, open('adj_list.p','w+'))
