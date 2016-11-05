@@ -11,10 +11,11 @@ if __name__ == "__main__":
     print "Load complete in", time.time() - loadStart, "s"
 
     alpha = 0.4
-    threshold = len(nodeList)/4
-    
-    print "Init row approximator"
+    threshold = len(nodeList)/2
+    print "alpha =", alpha, "; threshold = ", threshold
+
     rowApproximator = RowApproximator(adjList, nodeList, alpha)
+    print "Row approximator initialized."
 
     print "Start pagerank estimation"
     start = time.time()

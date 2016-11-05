@@ -12,7 +12,7 @@ def approxPageRank(threshold, nodeList, rowApproximator):
         sStart = time.time()
         for s in range(0, S):
             if s % 1000 == 0:
-                print "t =", t, "/", h, "; epst =", epst, "; s =", s+1, "-", min(s+1000,S), "/", S,
+                print "t =", t+1, "/", h+1, "; epst =", epst, "; s =", s+1, "-", min(s+1000,S), "/", S,
             v = nodeList[random.randrange(n)]
             neighbourList = rowApproximator.approxRow(v, epst/2.0, 0.5)
             for neighbour, eps in neighbourList.iteritems():
