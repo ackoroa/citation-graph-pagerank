@@ -5,13 +5,13 @@ def fRank(k, adjList, alpha):
     i = 0
     C = adjList.keys()
 
-    seqId = 0
+    seq = 0
     idToSeq = {}
     seqToId = {}
     for u in adjList.iteritems():
-        idToSeq[u] = seqId
-        seqToId[seqId] = u
-        seqId = seqId + 1
+        idToSeq[u] = seq
+        seqToId[seq] = u
+        seq = seq + 1
     G = getAdjMatrix(adjList, idToSeq)
     revSeqAdjList = getReverseSeqAdjList(adjList, idToSeq)
 
@@ -22,6 +22,7 @@ def fRank(k, adjList, alpha):
         if i != 0:
             R = computeReachableNodes(C, revAdjList)
             G = G[R][:,R]
+        
         prevR = np.copy(r)[mask]
         r = np.linalg.matrix_power(G, i).dot(np.ones(len(G)) * 1.0/len(G))
         lowerBounds = equation7(len(G), alpha, lowerBounds[mask], r, i)
@@ -29,6 +30,13 @@ def fRank(k, adjList, alpha):
         eps_i = np.copy(lowerBounds).sort()[k]
         mask = upperBounds >= eps_i
         C = C[mask]
+
+        newSeqToId = {}
+        seq = 0
+        for idx in mask.nonzero():
+            newSeqToId[seq] = seqToId[idx]
+            seq = seq + 1
+        seqToId = newSeqToId
         i = i + 1
 
     #This is wrong. After thr prunings the indices in the matrix 
