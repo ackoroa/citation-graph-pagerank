@@ -65,10 +65,10 @@ def computeReachableNodes(C, revSeqAdjList):
     while len(queue) > 0:
         u = queue.popLeft()
         visited.add(u)
+        R.append(u)
         for v in revSeqAdjList[u]:
             if v not in visited:
                 queue.append(v)
-                R.append(v)
     return R
 
 def equation7(N, alpha, prevLowerBounds, r, i):
