@@ -2,19 +2,18 @@ import numpy as np
 from collections import deque
 
 def fRank(k, adjList, alpha):
-    i = 0
-    C = adjList.keys()
-
     seq = 0
     idToSeq = {}
     seqToId = {}
-    for u in adjList.iteritems():
+    for u, vs in adjList.iteritems():
         idToSeq[u] = seq
         seqToId[seq] = u
         seq = seq + 1
     G = getAdjMatrix(adjList, idToSeq)
+    C = np.array(range(len(G)))
     revSeqAdjList = getReverseSeqAdjList(adjList, idToSeq)
 
+    i = 0
     lowerBounds = np.zeros(len(G))
     upperBounds = np.ones(len(G))
     mask = np.ones(len(G), dtype=bool)

@@ -10,7 +10,7 @@ if __name__ == "__main__":
     adjList = pickle.load(open("adj_list.p", "rb"))
     print "Load complete in", time.time() - loadStart, "s"
 
-    alpha = 0.4
+    alpha = 0.5
     threshold = len(nodeList)/2
     print "alpha =", alpha, "; threshold = ", threshold
 
