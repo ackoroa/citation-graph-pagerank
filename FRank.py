@@ -1,4 +1,4 @@
-import time
+import time, math
 import numpy as np
 from collections import deque
 
@@ -12,9 +12,9 @@ def fRank(k, adjList, alpha):
         idToSeq[u] = seq
         seqToId[seq] = u
         seq = seq + 1
-    G = getAdjMatrix(adjList, idToSeq)
+    G = getSeqAdjList(adjList, idToSeq)
     C = np.array(range(len(G)))
-    revAdjList = getReverseSeqAdjList(adjList, idToSeq)
+    revAdjList = getReverseAdjList(G)
     print "graph initialized in", time.time() - initStart, "s"
 
     i = 0
@@ -22,89 +22,101 @@ def fRank(k, adjList, alpha):
     upperBounds = np.ones(len(G))
     mask = np.ones(len(G), dtype=bool)
     r_prev = np.zeros(len(G))
+    pruneMap = {}
     while len(C) > k:
         itStart = time.time()
         print "iteration", i, ": len(C) =", len(C), 
         if i != 0:
             R = computeReachableNodes(C, revAdjList)
+            print "; len(R) =", len(R),
             G = computePrunedGraph(G, R)
+            print "; len(G) =", len(G),
+            C = np.array(range(len(G)))
+            revAdjList = getReverseAdjList(G)
+            mask = np.array(list(R))
             r_prev = np.copy(r)[mask]
+        print "; compute r",
         r = computeR(G, i)
-        lowerBounds = equation7(len(G), alpha, lowerBounds[mask], r, i)
-        upperBounds = equation8(len(G), alpha, upperBounds[mask], r, r_prev, G, i)
+        print "; compute lb",
+        lowerBounds = equation7(len(C), alpha, lowerBounds[mask], r, i)
+        print "; compute ub",
+        upperBounds = equation8(len(C), alpha, upperBounds[mask], r, r_prev, G, i)
+        print "; compute C",
         eps_i = computeEps_i(lowerBounds, k)
-        mask = upperBounds >= eps_i
-        C = C[mask]
+        print "; eps_i =", eps_i,
+        C = C[upperBounds >= eps_i]
 
-        newSeqToId = {}
-        seq = 0
-        for idx in mask.nonzero()[0]:
-            newSeqToId[seq] = seqToId[idx]
-            seq = seq + 1
-        seqToId = newSeqToId
         i = i + 1
         print ";", time.time() - itStart, "s"
 
-    topKNodes = []
-    for c in C:
-        topKNodes.append(seqToId[c])
-    return topKNodes
+#    topKNodes = []
+#    for c in C:
+#        topKNodes.append(seqToId[c])
+    return []#topKNodes
 
-def getAdjMatrix(adjList, idToSeq):
-    adjMat = []
-    for _ in range(len(adjList)):
-        adjMat.append([])
+def getSeqAdjList(adjList, idToSeq):
+    seqAdjList = {}
 
     for u, vs in adjList.iteritems():
         uSeq = idToSeq[u]
+        seqAdjList[uSeq] = []
         for v in vs:
             vSeq = idToSeq[v]
-            adjMat[uSeq].append(vSeq)
-    return np.array(adjMat)
+            seqAdjList[uSeq].append(vSeq)
+    return seqAdjList
 
-def getReverseSeqAdjList(adjList, idToSeq):
+def getReverseAdjList(adjList):
     revAdjList = {}
     for u, vs in adjList.iteritems():
-        uSeq = idToSeq[u]
         for v in vs:
-            vSeq = idToSeq[v]
-            if not vSeq in revAdjList:
-                revAdjList[vSeq] = []
-            revAdjList[vSeq].append(uSeq)
-    return revAdjList    
+            if not v in revAdjList:
+                revAdjList[v] = []
+            revAdjList[v].append(u)
+    return revAdjList
 
-def computeReachableNodes(C, revSeqAdjList):
-    R = []
+def computeReachableNodes(C, revAdjList):
     queue = deque(C)
     visited = set()
     while len(queue) > 0:
         u = queue.popleft()
         visited.add(u)
-        R.append(u)
-        for v in revSeqAdjList[u]:
-            if v not in visited:
-                queue.append(v)
-    return R
+        if u in revAdjList:
+            for v in revAdjList[u]:
+                if v not in visited:
+                    queue.append(v)
+    return visited
 
 def computePrunedGraph(G, R):
-    G = G[R]
-    rSet = set(R)
-    for u in G:
-        vs = G[u]
-        mask = []
-        for v in vs:
-            mask.append(v in R)
-        G[u] = G[u][mask]
-    return G
+    pruneMap = {}
+    seq = 0
+    for r in R:
+        pruneMap[r] = seq
+        seq = seq + 1
+
+    prunedG = {}
+    for u, vs in G.iteritems():
+        if u in R:
+            prunedG[pruneMap[u]] = []
+            for v in vs:
+                if v in R:
+                    prunedG[pruneMap[u]].append(pruneMap[v])
+    return prunedG
 
 def computeR(G, i):
+    e = np.ones(len(G)) * 1.0/len(G)
     if i == 0:
-        return np.ones(len(G)) * 1.0/len(G)
-    else:
-        r = []
-        for u in G:
-            r.append(float(len(G[u]))/len(G))
+        return e
+    elif i == 1:
+        r = np.zeros(len(G))
+        for u, vs in G.iteritems():
+            r[u] = float(len(vs)) / len(G)
         return r
+    else :
+        r = np.zeros((len(G), len(G)))
+        for u, vs in G.iteritems():
+            for v in vs:
+                r[u][v] = 1
+        return np.linalg.matrix_power(r, i).dot(e)
 
 def equation7(N, alpha, prevLowerBounds, r, i):
     if i == 0:
@@ -114,8 +126,8 @@ def equation7(N, alpha, prevLowerBounds, r, i):
 
 def equation8(N, alpha, prevUpperBounds, r, prevR, W, i):
     Wbar = []
-    for w in W:
-        if len(w) > 0:
+    for u, vs in W.iteritems():
+        if len(vs) > 0:
             Wbar.append(1)
         else:
             Wbar.append(0)
@@ -123,9 +135,9 @@ def equation8(N, alpha, prevUpperBounds, r, prevR, W, i):
     if i == 0:
         return np.ones(N) * alpha/(1 - alpha) * Wbar
     else:
-        bigDelta = np.sum(np.substract(r, prevR))
-        delta = math.pow(alpha, i+1) * r
-        return np.add(prevUpperBounds, math.pow(alpha, i) * r, bigDelta * delta * Wbar)
+        bigDelta = np.sum(np.maximum(np.subtract(r, prevR), 0))
+        delta = math.pow(alpha, i+1) / (1 - alpha)
+        return np.add(prevUpperBounds, np.add(math.pow(alpha, i) * r, bigDelta * delta * Wbar))
 
 def computeEps_i(lowerBounds, k):
     lb = np.copy(lowerBounds)
