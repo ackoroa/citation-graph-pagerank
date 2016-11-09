@@ -37,10 +37,10 @@ def fRank(k, adjList, alpha):
             r_prev = np.copy(r)[mask]
         print "; compute r",
         r = computeR(G, i)
+        print "; compute ub",
+        upperBounds = equation8(len(C), alpha, lowerBounds[mask], r, r_prev, G, i)
         print "; compute lb",
         lowerBounds = equation7(len(C), alpha, lowerBounds[mask], r, i)
-        print "; compute ub",
-        upperBounds = equation8(len(C), alpha, upperBounds[mask], r, r_prev, G, i)
         print "; compute C",
         eps_i = computeEps_i(lowerBounds, k)
         print "; eps_i =", eps_i,
@@ -124,22 +124,19 @@ def equation7(N, alpha, prevLowerBounds, r, i):
     else:
         return np.add(prevLowerBounds, (1 - alpha) * math.pow(alpha, i) * r)
 
-def equation8(N, alpha, prevUpperBounds, r, prevR, W, i):
-    Wbar = []
+def equation8(N, alpha, prevLowerBounds, r, prevR, W, i):
+    Wbar = np.zeros(len(W))
     for u, vs in W.iteritems():
         if len(vs) > 0:
-            Wbar.append(1)
-        else:
-            Wbar.append(0)
-    Wbar = np.array(Wbar)
+            Wbar[u] = 1
     if i == 0:
-        return np.ones(N) * alpha/(1 - alpha) * Wbar
+        return np.ones(N) / float(N) + alpha/(1 - alpha) * Wbar
     else:
         bigDelta = np.sum(np.maximum(np.subtract(r, prevR), 0))
         delta = math.pow(alpha, i+1) / (1 - alpha)
-        return np.add(prevUpperBounds, np.add(math.pow(alpha, i) * r, bigDelta * delta * Wbar))
+        return np.add(prevLowerBounds, np.add(math.pow(alpha, i) * r, bigDelta * delta * Wbar))
 
 def computeEps_i(lowerBounds, k):
     lb = np.copy(lowerBounds)
     lb.sort()
-    return lb[k]
+    return lb[-k]
