@@ -8,6 +8,7 @@ class RowApproximator:
         self.node_list = node_list
         self.n = len(node_list)
         self.alpha = alpha
+        random.seed(time.time())
         # print "Time cost:", time.time() - start_time
 
     def getAverageNodeCountTree(self, node_count_tree, r):
