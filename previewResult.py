@@ -1,8 +1,7 @@
 import pickle, sys
 
 if __name__ == "__main__":
-	# a = pickle.load(open('article_store.p', 'rb'))
-	a = article_store
+	a = pickle.load(open('article_store.p', 'rb'))
 
 	print "Article store loaded."
 	input_text = ""
@@ -14,10 +13,12 @@ if __name__ == "__main__":
 			
 			index_list = pickle.load(open(input_text, 'rb'))
 
-			out_file = open('titles_result.txt', 'w+')
+			out_file = open(input_text+'.txt', 'w+')
 			out_string = ''
 			for index in index_list:
-				out_string += a[index.strip()]['@'] + '\t' + a[index.strip()]['*'] + '\n'
+				index_clean = index[0].strip()
+				if index_clean in a and '@' in a[index_clean] and '*' in a[index_clean]:
+					out_string += a[index_clean]['@'] + '\t' + a[index_clean]['*'] + '\n'
 			out_file.write(out_string)
 			out_file.close()
 			print "Titles written to", 'titles' + input_text + '.txt'

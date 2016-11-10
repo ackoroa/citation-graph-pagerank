@@ -10,7 +10,7 @@ if __name__ == "__main__":
     adjList = pickle.load(open("adj_list.p", "rb"))
     print "Load complete in", time.time() - loadStart, "s"
 
-    alpha = 0.5
+    alpha = 0.15
     threshold = len(nodeList)/2
     print "alpha =", alpha, "; threshold = ", threshold
 
@@ -28,5 +28,5 @@ if __name__ == "__main__":
         print significantNodes[i]
 
     print "Dumping significant nodes..."
-    pickle.dump(significantNodes, open('exp1.p','w+'))
+    pickle.dump(significantNodes, open('exp1_85.p','wb'))
     print "Done."
