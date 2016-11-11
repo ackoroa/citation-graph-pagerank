@@ -48,7 +48,7 @@ if __name__ == "__main__":
     for elm in estimate_list:
         if not elm in false_positive:
             estimate_list_elm_idx.append(exact_list.index(elm))
-    _, count = SortCount(estimate_list_elm_idx[:40])
+    _, count = SortCount(estimate_list_elm_idx)
 
     print len(false_positive)
     print len(false_negative)
