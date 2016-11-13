@@ -1,6 +1,7 @@
 import time, pickle
 from ApproxRow import RowApproximator
 from ApproxPageRank import approxPageRank
+from ApproxPageRankRefined import approxPageRankRefined
 
 if __name__ == "__main__":
     loadStart = time.time()
@@ -12,6 +13,8 @@ if __name__ == "__main__":
 
     alpha = 0.15
     threshold = len(nodeList)/2
+    #c = 6
+    #delta = 0.5
     print "alpha =", alpha, "; threshold = ", threshold
 
     rowApproximator = RowApproximator(adjList, nodeList, alpha)
@@ -20,6 +23,7 @@ if __name__ == "__main__":
     print "Start pagerank estimation"
     start = time.time()
     significantNodes = approxPageRank(threshold, nodeList, rowApproximator)
+    #significantNodes = approxPageRank(c, threshold, delta, nodeList, rowApproximator)
     print "Pagerank estimated in", time.time() - start, "s"
     print "Found", len(significantNodes), "significant nodes."
 

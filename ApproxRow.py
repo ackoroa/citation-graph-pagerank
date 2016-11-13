@@ -35,6 +35,24 @@ class RowApproximator:
         # print "approxRow ok. Time cost:", time.time() - start_time
         return node_count_tree
 
+    def approxRowRefined(self, v, eps, rho, p):
+        # start_time = time.time()
+        # print "approxRow: ", v
+        length = int(math.ceil(math.log(4/eps, 1/(1-self.alpha))))
+        r = int(math.ceil(1/(eps * rho * rho) * 16 * math.log(self.n/p, 2)))
+        # print "r =",r, "length =", length
+
+        node_count_tree = {}
+        for i in range(0, r):
+            last_node = self.walk(v, self.alpha, length)
+            if not last_node in node_count_tree:
+                node_count_tree[last_node] = 0
+            node_count_tree[last_node] += 1
+
+        node_count_tree = self.getAverageNodeCountTree(node_count_tree, r)
+        # print "approxRow ok. Time cost:", time.time() - start_time
+        return node_count_tree
+
     def walk(self, v, alpha, length):
         count = 0
         cur_node = v
